@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 include_once __DIR__."/vendor/autoload.php";
@@ -27,8 +28,8 @@ for ($i = 1; $i <= 10; $i++) {
 
 }
 
-printf("샘플 개수: %d\n", count($samples));
-printf("타깃 배열: [ ");
+printf("samples: %d\n", count($samples));
+printf("targets: [ ");
 for ($i = 0; $i < count($targets); $i++) {
 	printf("%d, ", $targets[$i]);
 }
@@ -37,7 +38,7 @@ printf("]\n");
 $model = new MLPClassifier(
 	1200,
 	[
-		new Layer(2, Neuron::class, new Sigmoid),
+		new Layer(2, Neuron::class, new PReLU),
 		new Layer(2, Neuron::class, new Sigmoid)
 	],
 	[0, 1]
