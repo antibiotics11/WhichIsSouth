@@ -1,5 +1,6 @@
-# WhichIsSouthernFlag?
+# flag-classification
 
-태극기와 인공기를 분류하는 PHP-ML 모델입니다.
+A <a href = 'https://github.com/jorgecasas/php-ml'>PHP-ML</a> model for flag image classification.
 
-A PHP-ML model that classifies the South Korean flag and the North Korean flag.
+- input: 40 * 30 grayscale image
+- output: [ 0 => South Korean flag, 1 => North Korean flag ]
