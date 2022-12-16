@@ -2,49 +2,73 @@
 <?php
 
 include_once __DIR__."/vendor/autoload.php";
-include_once __DIR__."/jpg_utils.php";
+include_once __DIR__."/preprocessing.php";
 
 use Phpml\Classification\MLPClassifier;
-use Phpml\NeuralNetwork\ActivationFunction\{PReLU, Sigmoid};
 use Phpml\NeuralNetwork\Layer;
 use Phpml\NeuralNetwork\Node\Neuron;
+use Phpml\NeuralNetwork\ActivationFunction\{PReLU, Sigmoid, HyperbolicTangent};
 use Phpml\ModelManager;
 
 ini_set("memory_limit", -1);
 
+$samples_dir = __DIR__."/train_data/resized/";
+$train_data = [];
+
+$files = scandir($samples_dir);
+
+foreach ($files as $file) {
+
+	if ($file == "." || $file == "..") {
+		continue;
+	}
+
+	$json = jpg_to_json($samples_dir.$file);
+	$arr = json_decode(color_to_grayscale($json));
+	$pixels = flatten($arr);
+	
+	$class = explode("-", $file)[0];
+	$target = -1;
+	
+	if ($class == "sk") {
+		$target = 0;
+	} else if ($class == "nk") {
+		$target = 1;
+	} else if ($class == "us") {
+		$target = 2;
+	}
+	
+	$train_data[] = [ $pixels, $target ];
+
+}
+
+shuffle($train_data);
+
 $samples = [];
 $targets = [];
 
-$sample_dir = __DIR__."/train_data/";
-for ($i = 1; $i <= 10; $i++) {
-
-	$grayscale_arr = read_json_as_array($sample_dir.$i.".json");
-	$grayscale_pixels = flatten_grayscale_pixels($grayscale_arr);
-
-	$target = ($i > 5) ? 1 : 0;
-
-	$samples[] = $grayscale_pixels;
-	$targets[] = $target;
-
+for ($i = 0; $i < count($train_data); $i++) {
+	
+	$samples[] = $train_data[$i][0];
+	$targets[] = $train_data[$i][1];
+	
 }
 
-printf("samples: %d\n", count($samples));
-printf("targets: [ ");
-for ($i = 0; $i < count($targets); $i++) {
-	printf("%d, ", $targets[$i]);
-}
-printf("]\n");
+print_r($targets);
 
 $model = new MLPClassifier(
 	1200,
 	[
-		new Layer(2, Neuron::class, new PReLU),
-		new Layer(2, Neuron::class, new Sigmoid)
+		new Layer(3, Neuron::class, new Sigmoid)
 	],
-	[0, 1]
+	[0, 1, 2],
+	35
 );
+
+printf("Start training\n");
 
 $model->train($samples, $targets);
 
 (new ModelManager)->saveToFile($model, __DIR__."/trained_model_2");
 
+printf("Complete\n");

@@ -1,35 +1,33 @@
 #!/usr/bin/php
 <?php
 
-const TEST_FILE_DIR = __DIR__."/prediction_test_data/";
-const PREDICTION_MODEL = "trained_model_1";
-
-include_once __DIR__."/vendor/autoload.php";
-include_once __DIR__."/jpg_utils.php";
-
-use Phpml\ModelManager;
-
 ini_set("memory_limit", -1);
 
-$model = (new ModelManager())->restoreFromFile(PREDICTION_MODEL);
-$test_files = scandir(TEST_FILE_DIR);
+include_once __DIR__."/vendor/autoload.php";
+include_once __DIR__."/preprocessing.php";
 
-foreach ($test_files as $file) {
+const PREDICTION_MODEL = "trained_model_2";
 
-	if ($file == "." || $file == ".." || $file == "resized") {
+$model = (new \Phpml\ModelManager())->restoreFromFile(PREDICTION_MODEL);
+
+
+$samples_dir = __DIR__."/test_data/resized/";
+$samples = [];
+$classes = [ "태극기", "인공기", "성조기" ];
+
+$files = scandir($samples_dir);
+
+foreach ($files as $file) {
+
+	if ($file == "." || $file == "..") {
 		continue;
 	}
 
-	$grayscale_arr = read_json_as_array(TEST_FILE_DIR.$file);
-	$grayscale_pixels = flatten_grayscale_pixels($grayscale_arr);
+	$json = jpg_to_json($samples_dir.$file);
+	$arr = json_decode(color_to_grayscale($json));
+	$pixels = flatten($arr);
+	
+	$result = $model->predict($pixels);
 
-	$result = $model->predict($grayscale_pixels);
-
-	if (!$result) {
-		printf("%s는 아마도 태극기입니다.\n", $file);
-	} else {
-		printf("%s는 아마도 인공기입니다.\n", $file);
-	}
-
+	printf("%s 는 아마도 %s 입니다.\n", $file, $classes[$result]);
 }
-

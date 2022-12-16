@@ -48,14 +48,14 @@ function color_to_grayscale(String $json): String {
 
 }
 
-function read_json_as_array(String $file): Array {
+function read_json_file(String $file): Array {
 
 	$contents = file_get_contents($file);
 	return (Array)json_decode($contents);
 
 }
 
-function flatten_grayscale_pixels(Array $arr): Array {
+function flatten(Array $arr): Array {
 
 	$flatten = [];
 	for ($i = 0; $i < count($arr); $i++) {
