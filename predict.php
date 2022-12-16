@@ -11,9 +11,9 @@ const PREDICTION_MODEL = "trained_model_2";
 $model = (new \Phpml\ModelManager())->restoreFromFile(PREDICTION_MODEL);
 
 
-$samples_dir = __DIR__."/test_data/resized/";
+$samples_dir = __DIR__."/train_data/resized/";
 $samples = [];
-$classes = [ "태극기", "인공기", "성조기" ];
+$classes = [ "태극기", "인공기", "성조기", "일장기", "오성홍기" ];
 
 $files = scandir($samples_dir);
 

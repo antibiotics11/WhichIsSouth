@@ -31,11 +31,15 @@ foreach ($files as $file) {
 	$target = -1;
 	
 	if ($class == "sk") {
-		$target = 0;
+		$target = "0";
 	} else if ($class == "nk") {
-		$target = 1;
+		$target = "1";
 	} else if ($class == "us") {
-		$target = 2;
+		$target = "2";
+	} else if ($class == "jp") {
+		$target = "3";
+	} else if ($class == "cn") {
+		$target = "4";
 	}
 	
 	$train_data[] = [ $pixels, $target ];
@@ -59,16 +63,16 @@ print_r($targets);
 $model = new MLPClassifier(
 	1200,
 	[
-		new Layer(3, Neuron::class, new Sigmoid)
+		new Layer(5, Neuron::class, new Sigmoid)
 	],
-	[0, 1, 2],
-	35
+	["0", "1", "2", "3", "4"],
+	30
 );
 
 printf("Start training\n");
 
 $model->train($samples, $targets);
 
-(new ModelManager)->saveToFile($model, __DIR__."/trained_model_2");
+(new ModelManager)->saveToFile($model, __DIR__."/trained_model_4");
 
 printf("Complete\n");
