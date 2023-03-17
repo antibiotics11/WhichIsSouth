@@ -12,7 +12,7 @@ $model = $manager->restoreFromFile(PREDICTION_MODEL);
 
 $samples = [];
 
-$samples_dir = __DIR__ . "/train_data";
+$samples_dir = __DIR__ . "/test_data";
 $files = scandir($samples_dir);
 foreach ($files as $imagefile) {
 
