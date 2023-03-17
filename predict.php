@@ -1,33 +1,31 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
-ini_set("memory_limit", -1);
+include_once __DIR__ . "/vendor/autoload.php";
+include_once __DIR__ . "/classes.php";
+include_once __DIR__ . "/preprocessing.php";
 
-include_once __DIR__."/vendor/autoload.php";
-include_once __DIR__."/preprocessing.php";
+const PREDICTION_MODEL = "trained_model";
 
-const PREDICTION_MODEL = "trained_model_2";
+$manager = new Phpml\ModelManager;
+$model = $manager->restoreFromFile(PREDICTION_MODEL);
 
-$model = (new \Phpml\ModelManager())->restoreFromFile(PREDICTION_MODEL);
-
-
-$samples_dir = __DIR__."/train_data/resized/";
 $samples = [];
-$classes = [ "태극기", "인공기", "성조기", "일장기", "오성홍기" ];
 
+$samples_dir = __DIR__ . "/train_data";
 $files = scandir($samples_dir);
+foreach ($files as $imagefile) {
 
-foreach ($files as $file) {
-
-	if ($file == "." || $file == "..") {
+	if (strcmp($imagefile, ".") === 0 || strcmp($imagefile, "..") === 0) {
 		continue;
 	}
 
-	$json = jpg_to_json($samples_dir.$file);
-	$arr = json_decode(color_to_grayscale($json));
-	$pixels = flatten($arr);
-	
-	$result = $model->predict($pixels);
+	$json = jpg_to_json($samples_dir.DIRECTORY_SEPARATOR.$imagefile);
+	$pixels = flatten(json_decode(rgb_to_grayscale($json)));
 
-	printf("%s 는 아마도 %s 입니다.\n", $file, $classes[$result]);
+	$result = $model->predict($pixels);
+	$class = FLAG_CLASSES[$result];
+
+	printf("%s is %s, %s\r\n", $imagefile, $class[0], $class[1]);
+
 }

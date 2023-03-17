@@ -2,23 +2,23 @@
 
 function jpg_to_json(String $file): String {
 
-	$size = getimagesize($file);
-
-	$image = imagecreatefromjpeg($file);
+	$size   = getimagesize($file);
+	$image  = imagecreatefromjpeg($file);
 	$pixels = [];
 
-	for ($i = 0; $i < $size[1]; $i++) {
-		for ($j = 0; $j < $size[0]; $j++) {
+	for ($y = 0; $y < $size[1]; $y++) {
+		for ($x = 0; $x < $size[0]; $x++) {
 
-			$rgb = imagecolorat($image, $j, $i);
-			$r = ($rgb >> 16) & 0xff;
-			$g = ($rgb >> 8) & 0xff;
-			$b = $rgb & 0xff;
+			$rgb = imagecolorat($image, $x, $y);
 
-			$pixels[$i][$j][0] = $r;
-			$pixels[$i][$j][1] = $g;
-			$pixels[$i][$j][2] = $b;
-		
+			$r = ($rgb >> 16) & 0xFF;
+			$g = ($rgb >> 8) & 0xFF;
+			$b = $rgb & 0xFF;
+
+			$pixels[$y][$x][0] = $r;
+			$pixels[$y][$x][1] = $g;
+			$pixels[$y][$x][2] = $b;
+
 		}
 	}
 
@@ -26,21 +26,21 @@ function jpg_to_json(String $file): String {
 
 }
 
-function color_to_grayscale(String $json): String {
-	
+function rgb_to_grayscale(String $json): String {
+
 	$json = json_decode($json, true);
 	$grayscale = [];
 
-	for ($i = 0; $i < count($json); $i++) {
-		for ($j = 0; $j < count($json[$i]); $j++) {
+	for ($y = 0; $y < count($json); $y++) {
+		for ($x = 0; $x < count($json[$y]); $x++) {
 
 			$value = (
-				0.299 * $json[$i][$j][0] +
-				0.587 * $json[$i][$j][1] +
-				0.114 * $json[$i][$j][2]
+				0.299 * $json[$y][$x][0] +
+				0.587 * $json[$y][$x][1] +
+				0.114 * $json[$y][$x][2]
 			);
-			$grayscale[$i][$j] = $value;
-		
+			$grayscale[$y][$x] = $value;
+
 		}
 	}
 
@@ -48,19 +48,12 @@ function color_to_grayscale(String $json): String {
 
 }
 
-function read_json_file(String $file): Array {
-
-	$contents = file_get_contents($file);
-	return (Array)json_decode($contents);
-
-}
-
-function flatten(Array $arr): Array {
+function flatten(Array $pixels): Array {
 
 	$flatten = [];
-	for ($i = 0; $i < count($arr); $i++) {
-		for ($j = 0; $j < count($arr[$i]); $j++) {
-			$flatten[] = (int)$arr[$i][$j] / 255.0;
+	for ($y = 0; $y < count($pixels); $y++) {
+		for ($x = 0; $x < count($pixels[$y]); $x++) {
+			$flatten[] = (int)$pixels[$y][$x] / 255.0;
 		}
 	}
 
