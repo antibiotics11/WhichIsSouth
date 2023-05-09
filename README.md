@@ -2,7 +2,7 @@
 
 A <a href = 'https://github.com/jorgecasas/php-ml'>PHP-ML</a> model for national flag image classification.
 
-- requirements: php7.2+, php-gd
+- requirements: php8+, php-gd
 - input: 40 * 30 grayscale image
 
 ## classes
