@@ -1,5 +1,6 @@
 {
-    "require": {
-        "php-ai/php-ml": "^0.10.0"
-    }
+  "require": {
+    "ext-gd": "*",
+    "php-ai/php-ml": "^0.10.0"
+  }
 }
