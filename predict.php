@@ -2,30 +2,28 @@
 <?php
 
 include_once __DIR__ . "/vendor/autoload.php";
-include_once __DIR__ . "/classes.php";
+include_once __DIR__ . "/flag_classes.php";
 include_once __DIR__ . "/preprocessing.php";
 
-const PREDICTION_MODEL = "trained_model";
-
 $manager = new Phpml\ModelManager;
-$model = $manager->restoreFromFile(PREDICTION_MODEL);
+$model = $manager->restoreFromFile(__DIR__ . "/trained_model");
 
 $samples = [];
 
 $samples_dir = __DIR__ . "/test_data";
 $files = scandir($samples_dir);
-foreach ($files as $imagefile) {
+foreach ($files as $image_file) {
 
-	if (strcmp($imagefile, ".") === 0 || strcmp($imagefile, "..") === 0) {
-		continue;
-	}
+  if (strcmp($image_file, ".") == 0 || strcmp($image_file, "..") == 0) {
+    continue;
+  }
 
-	$json = jpg_to_json($samples_dir.DIRECTORY_SEPARATOR.$imagefile);
-	$pixels = flatten(json_decode(rgb_to_grayscale($json)));
+  $json = jpg_to_json($samples_dir . DIRECTORY_SEPARATOR . $image_file);
+  $pixels = flatten(json_decode(rgb_to_grayscale($json)));
 
-	$result = $model->predict($pixels);
-	$class = FLAG_CLASSES[$result];
+  $result = $model->predict($pixels);
+  $class = FLAG_CLASSES[$result];
 
-	printf("%s is %s, %s\r\n", $imagefile, $class[0], $class[1]);
+  printf("%s seems to be the '%s' of %s.\r\n", $image_file, $class[0], $class[1]);
 
 }
