@@ -24,6 +24,6 @@ foreach ($files as $image_file) {
   $result = $model->predict($pixels);
   $class = FLAG_CLASSES[$result];
 
-  printf("%s seems to be the '%s' of %s.\r\n", $image_file, $class[0], $class[1]);
+  printf("'%s' seems to be the '%s' of %s.\r\n", $image_file, $class[1], $class[0]);
 
 }
